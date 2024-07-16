@@ -2,6 +2,8 @@ import {Link, useLocation} from "react-router-dom";
 import {useEffect, useState, useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import {FaUser, FaUserSecret} from "react-icons/fa6";
+import bcrypt from "bcryptjs";
+import MySwal from "sweetalert2";
 
 export default function Register() {
   const user = localStorage.getItem("user");
@@ -41,14 +43,54 @@ export default function Register() {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const username = form.get("username");
     const email = form.get("email");
     const phoneNumber = form.get("number");
     const pinCode = pin.join("");
-    console.log("Phone Number:", phoneNumber, "PIN:", pinCode, accType);
+    const hashedPinCode = await bcrypt.hash(pinCode, 10);
+
+    const data = {
+      username: username,
+      email: email,
+      phone: phoneNumber,
+      pin: hashedPinCode,
+      role: accType,
+      verified: false,
+    };
+
+    console.log(data);
+
+    fetch("http://localhost:5000/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+        MySwal.fire({
+          position: "center",
+          icon: "success",
+          text: response.message || "Registration Successful!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        MySwal.fire({
+          position: "center",
+          icon: "error",
+          text: "Registration Failed!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
   };
 
   return (
@@ -110,7 +152,7 @@ export default function Register() {
                       onChange={(e) => handlePinChange(e, index)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       ref={(el) => (inputRefs.current[index] = el)}
-                      className="w-full text-center rounded-xs input input-bordered"
+                      className="w-full font-bold text-center rounded-xs input input-bordered"
                       required
                     />
                   ))}
