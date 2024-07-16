@@ -1,9 +1,11 @@
 import {Link, useLocation} from "react-router-dom";
 import {useEffect, useState, useRef} from "react";
 import {useNavigate} from "react-router-dom";
+import {FaUser, FaUserSecret} from "react-icons/fa6";
 
-export default function Login() {
+export default function Register() {
   const user = localStorage.getItem("user");
+  const [accType, setAccType] = useState("normal");
   const [pin, setPin] = useState(Array(6).fill(""));
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,12 +41,14 @@ export default function Login() {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    const username = form.get("username");
+    const email = form.get("email");
     const phoneNumber = form.get("number");
     const pinCode = pin.join("");
-    console.log("Phone Number:", phoneNumber, "PIN:", pinCode);
+    console.log("Phone Number:", phoneNumber, "PIN:", pinCode, accType);
   };
 
   return (
@@ -52,10 +56,34 @@ export default function Login() {
       <div className="min-h-screen hero bg-[#F3ECDA] animate__animated animate__slideInLeft">
         <div className="flex items-center justify-center w-full hero-content">
           <div className="w-full max-w-md border-2 border-green-500 shadow-2xl border-opacity-60 rounded-xs card bg-base-100">
-            <form onSubmit={handleLogin} className="card-body">
+            <form onSubmit={handleRegister} className="card-body">
               <caption className="text-2xl font-bold text-green-500 uppercase">
-                Login
+                Register
               </caption>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Name</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  name="username"
+                  className="rounded-xs input input-bordered"
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  name="email"
+                  className="rounded-xs input input-bordered"
+                  required
+                />
+              </div>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Phone Number</span>
@@ -87,19 +115,43 @@ export default function Login() {
                     />
                   ))}
                 </div>
-                <label className="label">
-                  <Link
-                    to="/register"
-                    className="label-text-alt link link-hover"
-                  >
-                    Don&#39;t have an account?
-                    <span className="text-green-600 underline"> Register</span>
-                  </Link>
+              </div>
+              <div className="form-control">
+                <label className="cursor-pointer label">
+                  <span className="flex items-center justify-center gap-1 label-text">
+                    <FaUser></FaUser> Normal Account
+                  </span>
+                  <input
+                    type="radio"
+                    name="radio-10"
+                    className="radio checked:bg-green-500"
+                    onClick={() => setAccType("normal")}
+                    defaultChecked
+                  />
                 </label>
               </div>
-              <div className="mt-2 form-control">
+              <div className="form-control">
+                <label className="cursor-pointer label">
+                  <span className="flex items-center justify-center gap-1 label-text">
+                    <FaUserSecret></FaUserSecret> Agent Account
+                  </span>
+                  <input
+                    type="radio"
+                    name="radio-10"
+                    className="radio checked:bg-blue-500"
+                    onClick={() => setAccType("agent")}
+                  />
+                </label>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <Link to="/login" className="label-text-alt link link-hover">
+                    Already have an account?
+                    <span className="text-green-600 underline"> Login</span>
+                  </Link>
+                </label>
                 <button className="font-bold uppercase bg-green-500 hover:text-green-500 rounded-xs btn text-gray-950">
-                  Login
+                  Register
                 </button>
               </div>
             </form>

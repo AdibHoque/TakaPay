@@ -22,7 +22,7 @@ export default function Root() {
     );
   }
   return (
-    <div className="">
+    <div className="bg-[#F3ECDA]">
       <ScrollRestoration />
       <Outlet></Outlet>
     </div>
