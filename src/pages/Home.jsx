@@ -1,4 +1,4 @@
-function App() {
+function Home() {
   return (
     <>
       <h1 className="text-5xl text-green-600">TakaPay</h1>
@@ -6,4 +6,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
