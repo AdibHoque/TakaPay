@@ -1,6 +1,7 @@
 import {Link, useLocation} from "react-router-dom";
 import {useEffect, useState, useRef} from "react";
 import {useNavigate} from "react-router-dom";
+import MySwal from "sweetalert2";
 
 export default function Login() {
   const user = localStorage.getItem("user");
@@ -39,12 +40,56 @@ export default function Login() {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const phoneNumber = form.get("number");
     const pinCode = pin.join("");
-    console.log("Phone Number:", phoneNumber, "PIN:", pinCode);
+
+    const data = {
+      phone: phoneNumber,
+      pin: pinCode,
+    };
+
+    fetch("http://localhost:5000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+        if (response.message == "Login Successful") {
+          MySwal.fire({
+            position: "center",
+            icon: "success",
+            text: "Login Successful!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          localStorage.setItem("user", JSON.stringify(response.user));
+        } else {
+          MySwal.fire({
+            position: "center",
+            icon: "error",
+            text: response.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        MySwal.fire({
+          position: "center",
+          icon: "error",
+          text: "Login Failed!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
   };
 
   return (
@@ -82,7 +127,7 @@ export default function Login() {
                       onChange={(e) => handlePinChange(e, index)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       ref={(el) => (inputRefs.current[index] = el)}
-                      className="w-full text-center rounded-xs input input-bordered"
+                      className="w-full font-bold text-center rounded-xs input input-bordered"
                       required
                     />
                   ))}
